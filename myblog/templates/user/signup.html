@@ -1,0 +1,43 @@
+{% extends "blog/base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center px-4 py-12">
+    <div class="max-w-md w-full">
+        <div class="text-center mb-8">
+            <span class="text-5xl">💡</span>
+            <h2 class="mt-4 text-3xl font-bold text-slate-900">Create Your Account</h2>
+            <p class="mt-2 text-slate-600">Join the hive and start sharing your knowledge.</p>
+        </div>
+
+        <div class="bg-white p-8 rounded-xl shadow-lg border border-slate-200">
+            <form method="post" novalidate class="space-y-4">
+                {% csrf_token %}
+
+                {% for field in form %}
+                <div>
+                    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-slate-700">{{ field.label }}</label>
+                    <div class="mt-1">
+                        {% render_field field class="form-input" %}
+                    </div>
+                    {% if field.help_text %}<p class="text-xs text-slate-500 mt-1">{{ field.help_text|safe }}</p>{% endif %}
+                    {% for error in field.errors %}<p class="text-sm text-red-600 mt-1">{{ error }}</p>{% endfor %}
+                </div>
+                {% endfor %}
+
+                <div class="pt-4">
+                    <button type="submit" class="w-full btn btn-primary">Create Account</button>
+                </div>
+            </form>
+            <p class="mt-6 text-center text-sm text-slate-600">
+                Already have an account?
+                <a href="{% url 'login' %}" class="font-medium text-blue-600 hover:text-blue-700">
+                    Log in
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

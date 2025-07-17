@@ -1,0 +1,54 @@
+{% extends "blog/base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center px-4">
+    <div class="max-w-md w-full">
+        <div class="text-center mb-8">
+            <span class="text-5xl">🧠</span>
+            <h2 class="mt-4 text-3xl font-bold text-slate-900">Welcome Back</h2>
+            <p class="mt-2 text-slate-600">Sign in to continue to BrainHive-AI.</p>
+        </div>
+
+        <div class="bg-white p-8 rounded-xl shadow-lg border border-slate-200">
+            <form method="post" novalidate class="space-y-6">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md" role="alert">
+                    <p>{{ form.non_field_errors.0 }}</p>
+                </div>
+                {% endif %}
+
+                <div>
+                    <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-slate-700">{{ form.username.label }}</label>
+                    <div class="mt-1">
+                        {% render_field form.username class="form-input" placeholder="your_username" %}
+                    </div>
+                    {% if form.username.errors %}<p class="text-sm text-red-600 mt-1">{{ form.username.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium text-slate-700">{{ form.password.label }}</label>
+                    <div class="mt-1">
+                        {% render_field form.password class="form-input" placeholder="••••••••" %}
+                    </div>
+                    {% if form.password.errors %}<p class="text-sm text-red-600 mt-1">{{ form.password.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <button type="submit" class="w-full btn btn-primary">Sign In</button>
+                </div>
+            </form>
+            <p class="mt-6 text-center text-sm text-slate-600">
+                Not a member?
+                <a href="{% url 'signup' %}" class="font-medium text-blue-600 hover:text-blue-700">
+                    Sign up now
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

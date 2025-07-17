@@ -1,0 +1,222 @@
+{% comment %}
+    File: templates/blog/base.html
+    This final version includes the new branding and a redesigned "AI Assistant" button.
+{% endcomment %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BrainHive{% endblock %} | A Knowledge Sharing Platform</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Custom Tailwind Config & Base Styles -->
+    <style type="text/tailwindcss">
+        @layer base {
+            html {
+                font-family: 'Inter', sans-serif;
+            }
+            .prose {
+                @apply text-slate-700 max-w-none;
+            }
+            .prose h1, .prose h2, .prose h3 {
+                @apply text-slate-900 font-bold;
+            }
+            .prose a {
+                @apply text-blue-600 hover:text-blue-700 transition-colors;
+            }
+            .prose blockquote {
+                @apply border-l-4 border-slate-300 pl-4 text-slate-600 italic;
+            }
+        }
+        @layer components {
+            .form-input {
+                @apply w-full px-4 py-2 bg-white border border-slate-300 rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition;
+            }
+            .btn {
+                @apply inline-flex items-center justify-center px-4 py-2 font-semibold text-center rounded-lg shadow-sm transition-all duration-200 ease-in-out;
+            }
+            .btn-primary {
+                @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500;
+            }
+            .btn-secondary {
+                @apply bg-slate-100 text-slate-700 hover:bg-slate-200 focus:ring-2 focus:ring-offset-2 focus:ring-slate-400;
+            }
+            .btn-danger {
+                @apply bg-red-600 text-white hover:bg-red-700 focus:ring-2 focus:ring-offset-2 focus:ring-red-500;
+            }
+            /* New class for our AI button */
+            .btn-ai {
+                @apply bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:opacity-90 focus:ring-2 focus:ring-offset-2 focus:ring-purple-500;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased">
+    <div id="app" class="min-h-screen flex flex-col" x-data="{ mobileMenuOpen: false }">
+
+        <!-- Header / Navbar -->
+        <header class="bg-white/80 backdrop-blur-lg border-b border-slate-200 sticky top-0 z-50">
+            <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <!-- Logo -->
+                    <div class="flex-shrink-0">
+                        <a href="{% url 'post_list' %}" class="flex items-center space-x-2">
+                            <span class="text-2xl">🧠</span>
+                            <span class="text-xl font-bold text-slate-800">BrainHive</span>
+                        </a>
+                    </div>
+
+                    <!-- Right Side Navigation (Desktop) -->
+                    <div class="hidden md:flex items-center space-x-6">
+                        <a href="{% url 'post_list' %}" class="text-slate-600 hover:text-blue-600 transition-colors font-medium">Home</a>
+                        <a href="{% url 'post_list' %}" class="text-slate-600 hover:text-blue-600 transition-colors font-medium">Articles</a>
+                        
+                        <!-- Redesigned AI Assistant Link -->
+                        <a href="{% url 'chatbot' %}" class="btn btn-ai text-sm">
+                            <i data-lucide="sparkles" class="w-4 h-4 mr-2"></i>
+                            AI Assistant
+                        </a>
+                        
+                        {% if user.is_authenticated %}
+                            <!-- Authenticated User Links -->
+                            <div class="w-px h-6 bg-slate-200"></div>
+                            <a href="{% url 'post_create' %}" class="btn btn-primary text-sm">
+                                <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                                Share Knowledge
+                            </a>
+                            <div class="relative" x-data="{ open: false }" @click.away="open = false">
+                                <button @click="open = !open" class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold hover:ring-2 hover:ring-blue-500 hover:ring-offset-2 transition-all">
+                                    {{ user.username|first|upper }}
+                                </button>
+                                <div x-show="open" x-transition class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-1 z-50 border border-slate-200">
+                                    <a href="{% url 'profile' %}?section=posts" class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
+                                        <i data-lucide="layout-grid" class="w-4 h-4 mr-2"></i> My Articles
+                                    </a>
+                                    <a href="{% url 'profile' %}?section=update" class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
+                                        <i data-lucide="user-cog" class="w-4 h-4 mr-2"></i> Update Profile
+                                    </a>
+                                    <div class="border-t border-slate-200 my-1"></div>
+                                    <form method="post" action="{% url 'logout' %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="w-full text-left flex items-center px-4 py-2 text-sm text-red-600 hover:bg-slate-100">
+                                            <i data-lucide="log-out" class="w-4 h-4 mr-2"></i> Logout
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% else %}
+                            <!-- Guest User Links -->
+                            <div class="w-px h-6 bg-slate-200"></div>
+                            <a href="{% url 'login' %}" class="text-slate-600 hover:text-blue-600 transition-colors font-medium">Login</a>
+                            <a href="{% url 'signup' %}" class="btn btn-primary text-sm">Sign Up</a>
+                        {% endif %}
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <div class="md:hidden">
+                        <button @click="mobileMenuOpen = !mobileMenuOpen" class="inline-flex items-center justify-center p-2 rounded-md text-slate-500 hover:text-slate-700 hover:bg-slate-100 focus:outline-none">
+                            <i data-lucide="menu" class="h-6 w-6"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Panel -->
+                <div x-show="mobileMenuOpen" x-transition class="md:hidden py-4">
+                    <div class="flex flex-col space-y-2">
+                         <a href="{% url 'post_list' %}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100">Home</a>
+                         <a href="{% url 'post_list' %}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100">Articles</a>
+                         <a href="{% url 'chatbot' %}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100">AI Assistant</a>
+                         <div class="border-t border-slate-200 pt-4 mt-2">
+                            {% if user.is_authenticated %}
+                                <div class="flex items-center px-3 mb-3">
+                                    <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold mr-3">
+                                        {{ user.username|first|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="text-base font-medium text-slate-800">{{ user.username }}</div>
+                                        <div class="text-sm font-medium text-slate-500">{{ user.email }}</div>
+                                    </div>
+                                </div>
+                                <a href="{% url 'profile' %}?section=posts" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100">My Articles</a>
+                                <a href="{% url 'profile' %}?section=update" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100">Update Profile</a>
+                                <a href="{% url 'post_create' %}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100">Share Knowledge</a>
+                                <form method="post" action="{% url 'logout' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-slate-100">Logout</button>
+                                </form>
+                            {% else %}
+                                <a href="{% url 'login' %}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100">Login</a>
+                                <a href="{% url 'signup' %}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100">Sign Up</a>
+                            {% endif %}
+                         </div>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow">
+            {% block content %}
+            {% endblock %}
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-slate-800 text-slate-400">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div>
+                        <a href="{% url 'post_list' %}" class="flex items-center space-x-2">
+                            <span class="text-2xl">🧠</span>
+                            <span class="text-xl font-bold text-white">BrainHive</span>
+                        </a>
+                        <p class="mt-4 text-sm">A community-driven hub for sharing knowledge, ideas, and insights.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-slate-300 tracking-wider uppercase">Navigation</h3>
+                        <ul class="mt-4 space-y-2">
+                            <li><a href="{% url 'post_list' %}" class="text-sm hover:text-white transition-colors">Home</a></li>
+                            <li><a href="{% url 'post_list' %}" class="text-sm hover:text-white transition-colors">All Articles</a></li>
+                             {% if user.is_authenticated %}
+                                <li><a href="{% url 'post_create' %}" class="text-sm hover:text-white transition-colors">Share Knowledge</a></li>
+                             {% else %}
+                                <li><a href="{% url 'login' %}" class="text-sm hover:text-white transition-colors">Login</a></li>
+                             {% endif %}
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-slate-300 tracking-wider uppercase">Stay Connected</h3>
+                        <p class="mt-4 text-sm">Join our newsletter to get the latest articles delivered to your inbox.</p>
+                         <form class="mt-4 flex">
+                            <input type="email" placeholder="Enter your email" class="form-input bg-slate-700 border-slate-600 text-white placeholder-slate-400">
+                            <button type="submit" class="btn btn-primary ml-2">Subscribe</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="mt-12 border-t border-slate-700 pt-8 text-sm text-center">
+                    <p>&copy; {% now "Y" %} BrainHive. All Rights Reserved. Created Shakil Ahamed Riaz</p>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Alpine.js for interactivity -->
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>

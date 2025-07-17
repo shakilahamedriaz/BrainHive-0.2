@@ -1,0 +1,130 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Explore Knowledge{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    <!-- Hero Section -->
+    <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-slate-900 tracking-tight">Welcome to the Hive</h1>
+        <p class="mt-4 max-w-2xl mx-auto text-lg text-slate-600">Explore a universe of knowledge, ideas, and expert insights from our community</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Main Content: Blog Posts -->
+        <div class="lg:col-span-8">
+            <!-- Search and Filter Bar -->
+            <div class="bg-white p-4 rounded-lg shadow-sm mb-8 border border-slate-200">
+                <form method="get" class="flex items-center space-x-4">
+                    <div class="relative flex-grow">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i data-lucide="search" class="w-5 h-5 text-slate-400"></i>
+                        </div>
+                        <input type="text" name="q" class="form-input pl-10" placeholder="Search articles..." value="{{ search_query|default:'' }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+            </div>
+
+            <div class="space-y-8">
+                {% for post in page_obj %}
+                <article class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 border border-slate-200 overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between text-sm text-slate-500 mb-2">
+                            <a href="?category={{ post.category.name }}" class="font-medium text-blue-600 hover:text-blue-700">{{ post.category.name }}</a>
+                            <span>{{ post.created_at|date:"F d, Y" }}</span>
+                        </div>
+                        <h2 class="text-2xl font-bold text-slate-900 mb-2">
+                            <a href="{% url 'post_details' post.id %}" class="hover:text-blue-600 transition-colors">{{ post.title }}</a>
+                        </h2>
+                        <p class="text-slate-600 leading-relaxed mb-4">{{ post.content|safe|striptags|truncatewords:35 }}</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold">
+                                    {{ post.author.username|first|upper }}
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-slate-800">{{ post.author.get_full_name|default:post.author.username }}</p>
+                                </div>
+                            </div>
+                            <a href="{% url 'post_details' post.id %}" class="btn btn-secondary">
+                                Read More <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+                {% empty %}
+                <div class="bg-white p-8 rounded-lg shadow-sm text-center border border-slate-200">
+                    <i data-lucide="search-x" class="w-16 h-16 mx-auto text-slate-400"></i>
+                    <h3 class="mt-4 text-xl font-semibold text-slate-800">No Posts Found</h3>
+                    <p class="mt-2 text-slate-500">We couldn't find any articles matching your search. Try a different keyword.</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <nav class="mt-12 flex items-center justify-between" aria-label="Pagination">
+                <div class="flex-1 flex justify-start">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if category_query %}&category={{ category_query }}{% endif %}{% if tag_query %}&tag={{ tag_query }}{% endif %}" class="btn btn-secondary">
+                            <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i> Previous
+                        </a>
+                    {% endif %}
+                </div>
+                <div class="hidden md:flex space-x-1">
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <span class="px-4 py-2 bg-blue-600 text-white font-medium rounded-md">{{ num }}</span>
+                        {% else %}
+                            <a href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}{% if category_query %}&category={{ category_query }}{% endif %}{% if tag_query %}&tag={{ tag_query }}{% endif %}" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-md">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="flex-1 flex justify-end">
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if category_query %}&category={{ category_query }}{% endif %}{% if tag_query %}&tag={{ tag_query }}{% endif %}" class="btn btn-secondary">
+                            Next <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </nav>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="lg:col-span-4 space-y-8">
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                <h3 class="text-lg font-bold text-slate-900 flex items-center">
+                    <i data-lucide="folder-open" class="w-5 h-5 mr-2 text-blue-600"></i>
+                    Categories
+                </h3>
+                <div class="mt-4 space-y-2">
+                    <a href="{% url 'post_list' %}" class="block px-3 py-2 rounded-md font-medium transition-colors {% if not request.GET.category %}bg-blue-50 text-blue-700{% else %}text-slate-600 hover:bg-slate-100{% endif %}">
+                        All Categories
+                    </a>
+                    {% for category in categories %}
+                    <a href="?category={{ category.name }}{% if search_query %}&q={{ search_query }}{% endif %}" class="block px-3 py-2 rounded-md font-medium transition-colors {% if request.GET.category == category.name %}bg-blue-50 text-blue-700{% else %}text-slate-600 hover:bg-slate-100{% endif %}">
+                        {{ category.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                <h3 class="text-lg font-bold text-slate-900 flex items-center">
+                    <i data-lucide="tags" class="w-5 h-5 mr-2 text-amber-600"></i>
+                    Popular Tags
+                </h3>
+                <div class="mt-4 flex flex-wrap gap-2">
+                    {% for tag in tags %}
+                    <a href="?tag={{ tag.name }}" class="px-3 py-1 rounded-full text-sm font-medium transition-colors {% if request.GET.tag == tag.name %}bg-amber-500 text-white{% else %}bg-slate-100 text-slate-600 hover:bg-slate-200{% endif %}">
+                        #{{ tag.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+{% endblock %}
