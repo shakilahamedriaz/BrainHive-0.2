@@ -15,6 +15,23 @@ from groq import Groq
 from dotenv import load_dotenv
 import os 
 
+
+
+# Add this new view function to your blog/views.py file
+
+def home_view(request):
+    # Fetch the 3 most recent posts to feature on the homepage
+    featured_posts = Post.objects.all().order_by('-created_at')[:3]
+    
+    # Fetch all categories to display them
+    categories = Category.objects.all()
+    
+    context = {
+        'featured_posts': featured_posts,
+        'categories': categories,
+    }
+    return render(request, 'blog/home.html', context)
+
 def post_list(request):
     # category, tag, searching, pagination --> post dekhate hobe
     categoryQ = request.GET.get('category')
@@ -213,10 +230,11 @@ def chatbot_view(request):
 
             # 4. Create a smart prompt for the Groq AI
             prompt = f"""
-            You are "Brainy", a helpful AI assistant for the BrainHive-AI blog.
-            Your task is to answer the user's question based *only* on the provided context from the blog posts.
-            Do not use any outside knowledge. Your Creator is "Shakil Ahamed Riaz"
-            If the context does not contain the answer, you must say: "I'm sorry, but I couldn't find information about that in the blog posts! ."
+            You are "Brainy", a helpful AI assistant for the BrainHive.
+            Your task is to answer the user's question based on the provided context from the BrainHive.
+            You can use outside knowledge if the context match with the BrainHive's Articles.
+            If the context does not contain the answer, you must say: "I'm sorry, I couldn't find information about that in the BrainHive! .
+            Your Creator is "Shakil Ahamed Riaz"
 
             CONTEXT FROM BLOG POSTS:
             {context}

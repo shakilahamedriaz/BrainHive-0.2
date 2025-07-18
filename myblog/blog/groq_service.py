@@ -19,9 +19,9 @@ def get_ai_summary(post_content_html):
 
         # Create the prompt for the AI
         prompt = f"""
-        You are an expert blog summarizer. Based on the following blog post content, please provide a concise, engaging summary of 2-3 sentences that captures the main points.
+        You are an expert Article summarizer. Based on the following article content, please provide a concise, engaging summary of 2-3 sentences that captures the main points.
 
-        Blog Post Content:
+        Article Content:
         "{plain_text_content}"
 
         Summary:

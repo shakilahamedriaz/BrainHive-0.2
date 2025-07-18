@@ -1,0 +1,156 @@
+{% extends "blog/base.html" %}
+{% load static %}
+
+{% block title %}Welcome to BrainHive{% endblock %}
+
+{% block content %}
+
+<!-- Custom CSS for the animated background -->
+<style>
+    .word-cloud-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 0;
+    }
+    .word-cloud-bg span {
+        position: absolute;
+        opacity: 0.1;
+        font-weight: 600;
+        color: #93c5fd; /* A light blue color */
+        animation: float 20s linear infinite;
+    }
+
+    @keyframes float {
+        0% { transform: translateY(100vh) scale(1); }
+        100% { transform: translateY(-100vh) scale(1.5); }
+    }
+</style>
+
+<!-- Hero Section with Animated Background -->
+<div class="relative bg-slate-50 overflow-hidden">
+    <!-- The animated word cloud background -->
+    <div class="word-cloud-bg">
+        <script>
+            // Simple script to generate and place the words randomly
+            const words = ["Knowledge", "AI", "Python", "Django", "Ideas", "Community", "Data Science", "Learning", "Innovation", "Tech", "Insights", "Collaboration", "No Politics"];
+            const container = document.querySelector('.word-cloud-bg');
+            for (let i = 0; i < 20; i++) {
+                const span = document.createElement('span');
+                span.textContent = words[Math.floor(Math.random() * words.length)];
+                span.style.left = `${Math.random() * 90}vw`;
+                span.style.fontSize = `${Math.random() * 3 + 1}rem`; // Font size between 1rem and 4rem
+                span.style.animationDuration = `${Math.random() * 20 + 20}s`; // Duration between 20s and 40s
+                span.style.animationDelay = `-${Math.random() * 40}s`; // Start at a random point in the animation
+                container.appendChild(span);
+            }
+        </script>
+    </div>
+
+    <div class="relative container mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 z-10">
+        <div class="text-center">
+            <!-- FIX: Added pb-4 (padding-bottom) to ensure text is not clipped -->
+<h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-snug pb-4">
+    <span class="text-slate-900">Welcome to the </span>
+    <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Knowledge Hive</span>
+</h1>
+
+
+            <p class="mt-5 max-w-2xl mx-auto text-lg text-slate-600">
+                A community-driven hub for sharing knowledge, ideas, and insights in the world of AI and beyond.
+            </p>
+            <div class="mt-8 flex justify-center gap-4">
+                <a href="{% url 'post_list' %}" class="btn btn-primary px-8 py-3 text-lg">Explore Articles</a>
+                <a href="{% url 'chatbot' %}" class="btn btn-secondary px-8 py-3 text-lg">Meet Brainy AI</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Articles Section -->
+<div class="bg-white py-16 sm:py-24">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold tracking-tight text-slate-900">Latest from the Hive</h2>
+            <p class="mt-2 text-lg text-slate-500">Check out the most recent articles shared by our community.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for post in featured_posts %}
+            <div class="bg-white rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-slate-200 flex flex-col group">
+                <div class="p-6 flex-grow">
+                    <p class="text-sm font-semibold text-blue-600">{{ post.category.name }}</p>
+                    <a href="{% url 'post_details' post.id %}" class="block mt-2">
+                        <h3 class="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{{ post.title }}</h3>
+                        <p class="mt-3 text-base text-slate-600">{{ post.summary|truncatewords:20 }}</p>
+                    </a>
+                </div>
+                <div class="p-6 bg-slate-50 rounded-b-lg">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold">
+                            {{ post.author.username|first|upper }}
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-slate-900">{{ post.author.get_full_name|default:post.author.username }}</p>
+                            <p class="text-sm text-slate-500">{{ post.created_at|date:"F d, Y" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-center text-slate-500 col-span-3">No articles have been published yet. Be the first to share your knowledge!</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Explore by Category Section -->
+<div class="bg-slate-50 py-16 sm:py-24">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold tracking-tight text-slate-900">Explore by Category</h2>
+            <p class="mt-2 text-lg text-slate-500">Dive into the topics that interest you most.</p>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {% for category in categories %}
+            <a href="{% url 'post_list' %}?category={{ category.name }}" class="group block p-6 rounded-lg text-center transition-all duration-300 {% cycle 'bg-amber-50 hover:bg-amber-100' 'bg-teal-50 hover:bg-teal-100' 'bg-rose-50 hover:bg-rose-100' 'bg-lime-50 hover:bg-lime-100' %}">
+                <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg {% cycle 'bg-amber-100 group-hover:shadow-amber-200' 'bg-teal-100 group-hover:shadow-teal-200' 'bg-rose-100 group-hover:shadow-rose-200' 'bg-lime-100 group-hover:shadow-lime-200' %}">
+                    <i data-lucide="folder" class="w-8 h-8 {% cycle 'text-amber-600' 'text-teal-600' 'text-rose-600' 'text-lime-600' %}"></i>
+                </div>
+                <h3 class="mt-4 text-lg font-semibold text-slate-800">{{ category.name }}</h3>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- AI Assistant CTA Section -->
+<div class="bg-slate-800">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+        <i data-lucide="sparkles" class="w-12 h-12 mx-auto text-purple-400"></i>
+        <h2 class="mt-4 text-3xl font-bold tracking-tight text-white">Meet Brainy, Your AI Assistant</h2>
+        <p class="mt-4 max-w-2xl mx-auto text-lg text-slate-300">
+            Have a question? Our AI can search through all the knowledge on BrainHive to find the answer for you.
+        </p>
+        <div class="mt-8">
+            <a href="{% url 'chatbot' %}" class="btn btn-ai px-8 py-3 text-lg">Ask Brainy a Question</a>
+        </div>
+    </div>
+</div>
+
+<!-- Join the Hive CTA Section -->
+<div class="bg-white py-16 sm:py-24">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-bold tracking-tight text-slate-900">Ready to Contribute?</h2>
+        <p class="mt-4 max-w-2xl mx-auto text-lg text-slate-600">
+            Join our community of thinkers, creators, and innovators. Share your knowledge and help the hive grow.
+        </p>
+        <div class="mt-8">
+            <a href="{% url 'signup' %}" class="btn btn-primary px-8 py-3 text-lg">Join the Hive Today</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
