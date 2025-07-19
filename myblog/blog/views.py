@@ -14,7 +14,9 @@ from sentence_transformers import SentenceTransformer
 from groq import Groq
 from dotenv import load_dotenv
 import os 
-
+from django.core.mail import send_mail
+from .forms import SignupForm #for singup
+from django.contrib import messages
 
 
 # Add this new view function to your blog/views.py file
@@ -31,6 +33,7 @@ def home_view(request):
         'categories': categories,
     }
     return render(request, 'blog/home.html', context)
+
 
 def post_list(request):
     # category, tag, searching, pagination --> post dekhate hobe
@@ -151,14 +154,29 @@ def post_delete(request, id):
 
 def signup_view(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = SignupForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)
+            #sent confirmation email
+            send_mail(
+                'Welcome to BrainHive!',
+                'Thank you for signing up for BrainHive. We hope you enjoy your experience!',
+                'BrainHive Team <riaz35-995@diu.edu.bd>',  # Use the default from email
+                [user.email],
+                fail_silently=False,
+            )
+            # Add success message to be shown on login page
+            messages.success(request, "✅ Signup successful! A confirmation email has been sent to your email address.")
+            return redirect('login')  # This now works correctly
+
+
             return redirect('login')
+
     else:
-        form = UserCreationForm()
+        form = SignupForm()
     return render(request, 'user/signup.html', {'form' : form})
+
+
 
 @login_required
 def profile_view(request):

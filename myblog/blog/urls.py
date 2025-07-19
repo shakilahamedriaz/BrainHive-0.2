@@ -20,4 +20,25 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='user/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('chatbot/', views.chatbot_view, name='chatbot'),
+
+    # --- NEW PASSWORD RESET URLS ---
+    # 1. Request a password reset
+    path('password-reset/', 
+         auth_views.PasswordResetView.as_view(template_name='user/password_reset_form.html'), 
+         name='password_reset'),
+    
+    # 2. Show a confirmation that the email was sent
+    path('password-reset/done/', 
+         auth_views.PasswordResetDoneView.as_view(template_name='user/password_reset_done.html'), 
+         name='password_reset_done'),
+    
+    # 3. The link in the email, where the user enters a new password
+    path('password-reset-confirm/<uidb64>/<token>/', 
+         auth_views.PasswordResetConfirmView.as_view(template_name='user/password_reset_confirm.html'), 
+         name='password_reset_confirm'),
+    
+    # 4. Show a final success message
+    path('password-reset-complete/', 
+         auth_views.PasswordResetCompleteView.as_view(template_name='user/password_reset_complete.html'), 
+         name='password_reset_complete'),
 ]

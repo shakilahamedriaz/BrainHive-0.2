@@ -9,8 +9,10 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
 from pathlib import Path
+#from decouple import config
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,9 +27,17 @@ SECRET_KEY = 'django-insecure--q=*-j60#ltbf3#1^fs6&0#l&76-tvg-(y3^q(ik&=fjzvm@x@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-#ALLOWED_HOSTS = ['192.168.0.162', 'localhost', '127.0.0.1']
+# This setting allows all hosts to access the application on local server
+
+#ALLOWED_HOSTS = ['192.168.0.162', 'localhost', '127.0.0.1']  
+#ALLOWED_HOSTS = ['*']
 
 ALLOWED_HOSTS = []
+                        # first config ip with 'ipconfig' command in cmd,
+                        # ALLOWED_HOSTS = ['*']
+                        # then run : python manage.py runserver 0.0.0.0:8000
+
+
 
 
 # Application definition
@@ -133,3 +143,24 @@ LOGIN_URL = '/login/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# --- Email Configuration for Password Reset (Development) ---
+# This setting tells Django to print emails to the console instead of sending them.
+# This is perfect for testing the password reset flow without a real email server.
+# settings.py
+
+# --- Email Configuration ---
+DEBUG = True
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+# Load environment variables from .env file
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  # Your Gmail App Password
+
+DEFAULT_FROM_EMAIL = os.getenv(f"BrainHive Team <{EMAIL_HOST_USER}>")
+# --- End of Email Configuration ---

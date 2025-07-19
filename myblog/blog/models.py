@@ -2,6 +2,9 @@ from django.db import models
 from ckeditor.fields import RichTextField
 from django.contrib.auth.models import User
 from .groq_service import get_ai_summary # Import our new function
+from django.urls import reverse
+from django.shortcuts import render, redirect
+
 
 
 # Create your models here.
@@ -30,7 +33,7 @@ class Post(models.Model):
     view_count = models.PositiveBigIntegerField(default=0)
     liked_users = models.ManyToManyField(User, related_name='liked_posts')
 
-    # Add this new field for the AI summary
+    # this field for the AI summary
     summary = models.TextField(blank=True, null=True, help_text="AI-generated summary.")
 
     def __str__(self):

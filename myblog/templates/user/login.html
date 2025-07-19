@@ -4,6 +4,16 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="bg-green-100 text-green-800 px-4 py-3 rounded mb-4 text-sm">
+                 {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+
+
 <div class="min-h-[70vh] flex items-center justify-center px-4">
     <div class="max-w-md w-full">
         <div class="text-center mb-8">
@@ -27,7 +37,6 @@
                     <div class="mt-1">
                         {% render_field form.username class="form-input" placeholder="your_username" %}
                     </div>
-                    {% if form.username.errors %}<p class="text-sm text-red-600 mt-1">{{ form.username.errors.0 }}</p>{% endif %}
                 </div>
 
                 <div>
@@ -35,7 +44,10 @@
                     <div class="mt-1">
                         {% render_field form.password class="form-input" placeholder="••••••••" %}
                     </div>
-                    {% if form.password.errors %}<p class="text-sm text-red-600 mt-1">{{ form.password.errors.0 }}</p>{% endif %}
+                    <!-- The "Forgot password?" link has been moved here -->
+                    <div class="text-sm text-right mt-2">
+                        <a href="{% url 'password_reset' %}" class="font-medium text-blue-600 hover:text-blue-700">Forgot password?</a>
+                    </div>
                 </div>
 
                 <div>
