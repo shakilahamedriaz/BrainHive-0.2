@@ -159,23 +159,41 @@ Ensure you have the following installed:
 ## 📂 Project Structure
 
 ```text
-BrainHive/
-├── brainhive_project/         # Main Django project settings
-│   ├── settings.py
-│   ├── urls.py
-│   └── wsgi.py
-├── core/                      # Core app (e.g., base models, utilities)
-├── accounts/                  # User authentication and profiles
-├── posts/                     # Knowledge posts, categories, tags
-├── search/                    # Search functionality
-├── ai_assistant/              # Brainy AI assistant logic, RAG implementation
-├── templates/                 # HTML templates
-├── static/                    # Static files (CSS, JS, images)
-├── media/                     # User-uploaded media
-├── manage.py                  # Django management script
-├── requirements.txt           # Python dependencies
-├── .env.example               # Example environment variables
-└── README.md                  # This file
+
+BrainHive-0.2/
+├── blog/                      # Django app for core blog/post functionalities
+│   ├── __pycache__/           # Python bytecode cache
+│   ├── migrations/            # Database migration files
+│   ├── __init__.py            # Initializes the blog app
+│   ├── admin.py               # Django admin configuration for blog models
+│   ├── apps.py                # Application configuration for the blog app
+│   ├── forms.py               # Django forms for blog-related data input
+│   ├── groq_service.py        # Service module interacting with Groq API (summarization)
+│   ├── models.py              # Database models for blog posts, categories, tags, etc.
+│   ├── tests.py               # Unit tests for the blog app
+│   ├── urls.py                # URL routing for the blog app
+│   └── views.py               # View functions/classes for the blog app
+├── myblog/                    # Main Django project configuration (root project)
+│   ├── __pycache__/           # Python bytecode cache
+│   ├── __init__.py            # Initializes the main project
+│   ├── asgi.py                # ASGI config for async applications
+│   ├── settings.py            # Core Django settings for the entire project
+│   ├── urls.py                # Main URL routing for the entire project
+│   └── wsgi.py               # WSGI config for synchronous applications
+├── static/                    # Directory for static assets (CSS, JS, images)
+├── templates/                 # HTML templates directory
+│   ├── blog/                  # Templates specific to blog app
+│   └── user/                  # Templates for user auth and profiles
+├── venv/                      # Python virtual environment (ignored by Git)
+├── .env                       # Environment variables file (local, ignored by Git)
+├── .gitignore                 # Specifies files ignored by Git
+├── blog_post_index.faiss      # FAISS index file for blog post embeddings
+├── blog_post_mapping.pkl      # Pickle file mapping FAISS index to original content
+├── build.sh                   # Shell script for build/deployment tasks (e.g., collectstatic)
+├── db.sqlite3                 # SQLite database (for development/testing)
+├── manage.py                  # Django CLI utility for administrative tasks
+└── README.md                  # This documentation file
+
 
 ```
 ---
